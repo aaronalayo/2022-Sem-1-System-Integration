@@ -76,8 +76,6 @@ def _(item_id):
         item[key] = request.json.get(key)
 
     return item
-
-    return item
   except Exception as ex:
     print(ex) # print the exception in the terminal
     response.status = 204
