@@ -5,21 +5,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go ANYWHERE</title>
+    <title>JWT Validation</title>
 </head>
 
 <body>
     <nav>
-        <a href="/">Home</a>
+        <!-- <a href="/">Home</a>
         <a href="/about-us">About us</a>
-        <a href="/contact-us">Contact us</a>
+        <a href="/contact-us">Contact us</a> -->
     </nav>
     <main>
-        <iframe src="https://mitid.eu.pythonanywhere.com/" 
-        frameborder="0"
-        style="height: 18rem;"
-        >
-    </iframe>
+        <h2>Validate your JWT</h2>
+        <button id="post-btn">Enter your code</button>
     </main>
     <script>
         /*
@@ -31,23 +28,38 @@
             "exp":1600
         }
         */
+        var today = new Date();
+        var time = Date.parse(today.getHours() + today.getMinutes() + today.getSeconds());
+        const cpr = "12345"
+        let iat = time
+        let exp = iat + 600
+        let jwt = { "cpr": cpr, "iat": iat, "exp": exp }
+        const button = document.getElementById('post-btn');
+        button.addEventListener('click', async _ => {
+            try {
+                const response = await fetch('/jwt', {
+                    method: 'post',
+                    body: 
+                        JSON.stringify(jwt)
+                    
+                }).then(res => window.location.href = res.url);
+                
+            } catch (err) {
+                console.error(`Error: ${err}`);
+            }
+        });
+        // function sendJwt() {
+        //     fetch('/jwt', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Accept': 'application/json, text/plain, */*',
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify(jwt)
+        //     }).then(res => window.location.href = res.url);
+        // }
 
-        window.addEventListener("message", event => {
-            if(event.data == "no")
-                return
-
-            let jwt = { "cpr": "12345","iat": 1646214638,"exp": 1646215238}
-            //Validate the JWT in the server
-          console.log(event.data)
-        }, false)
-      </script>
+    </script>
 </body>
 
 </html>
-<!-- <script>
-    window.onmessage = function(e) {
-    if (e.data == 'YES') {
-        console.log(e.data);
-    }
-};
-</script> -->
