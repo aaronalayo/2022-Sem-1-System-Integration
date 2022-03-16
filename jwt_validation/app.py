@@ -4,6 +4,9 @@ import jwt
 import requests
 from send_sms import send_sms
 from secret import secret
+from models import User, save, get_u
+from get_phone import phone
+from get_code import generate_code
 
 
 @get("/")
@@ -13,21 +16,50 @@ def _():
 
 
 
-@post("/jwt")
+@post("/validate")
+@view("code")
 def _():
     jwtdata = json.load(request.body)
-    token =jwt.encode(jwtdata, secret, algorithm="HS256")
-    
+    # print(jwtdata)
+    # print(token)
     try:
-        json.loads(json.dumps(jwt.decode(token, key=secret, algorithms=['HS256', ])))
-        send_sms()
-
-        return redirect('/code')
+        jwt.decode(jwtdata, key=secret, algorithms=['HS256', ])
+        code = generate_code()
+        res = send_sms(code)
+        
+        u = User(mobile= phone, code= str(code))
+        
+        save(jwtdata, u.json())
+        
+        if res == 200:
+            response.set_cookie(name='token', value=jwtdata)
+            return redirect("code")          
     except jwt.InvalidSignatureError:
         return redirect('/')
 
 @get("/code")
 @view("code")
+def _():
+    return
+
+@post("/process")
+def _():
+    token = request.get_cookie("token")
+    print(token)
+    code = request.body.read()
+    print(code)
+    user = get_u(token)
+    user = json.loads(user)
+    print(user['code'])
+    if user['code'] == code:
+        print(f'this is the code: {code}')
+        return redirect("/welcome")
+    else:
+        print(f'code not found')
+        return redirect('/')
+
+@get("/welcome")
+@view("welcome")
 def _():
     return
 

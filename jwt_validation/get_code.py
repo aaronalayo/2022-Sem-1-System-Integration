@@ -2,5 +2,5 @@ import random
 
 def generate_code():
     code = random.randint(1000,9999)
-    print(code)
+    # print(code)
     return code
