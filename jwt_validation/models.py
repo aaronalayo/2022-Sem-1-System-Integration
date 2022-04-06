@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 import redis
 import json
-from redis.commands.json.path import Path
+import uuid
+
 r = redis.StrictRedis()
 
 redis = redis.Redis(host='localhost', port=6379, db=0)
@@ -15,13 +16,13 @@ class User(BaseModel):
 #     user: User
     
 
-def save(token, user):
-    r.execute_command('JSON.SET', token, '.', json.dumps(user))
+def save(userId, user):
+    r.execute_command('JSON.SET', userId, '.', json.dumps(user))
     print("Saved user")
     
 
-def get_u(userToken):
-    user = json.loads(r.execute_command('JSON.GET', userToken))
+def get_u(userId):
+    user = json.loads(r.execute_command('JSON.GET', userId))
     return user
 
 

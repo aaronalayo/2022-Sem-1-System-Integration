@@ -1,7 +1,7 @@
 from bottle import default_app, request, get, post, redirect, response,run, view, template
 import json
 import jwt
-import requests
+import uuid
 from send_sms import send_sms
 from secret import secret
 from models import User, save, get_u
@@ -20,19 +20,17 @@ def _():
 @view("code")
 def _():
     jwtdata = json.load(request.body)
-    # print(jwtdata)
-    # print(token)
     try:
         jwt.decode(jwtdata, key=secret, algorithms=['HS256', ])
         code = generate_code()
         res = send_sms(code)
         
         u = User(mobile= phone, code= str(code))
-        
-        save(jwtdata, u.json())
+        userId = str(uuid.uuid4())
+        save(userId, u.json())
         
         if res == 200:
-            response.set_cookie(name='token', value=jwtdata)
+            response.set_cookie(name='userId', value=userId)
             return redirect("code")          
     except jwt.InvalidSignatureError:
         return redirect('/')
@@ -44,13 +42,13 @@ def _():
 
 @post("/process")
 def _():
-    token = request.get_cookie("token")
-    print(token)
-    code = request.body.read()
+    userId = request.get_cookie("userId")
+    print(userId)
+    code = request.forms.get("code")
     print(code)
-    user = get_u(token)
+    user = get_u(userId)
     user = json.loads(user)
-    print(user['code'])
+    print(user)
     if user['code'] == code:
         print(f'this is the code: {code}')
         return redirect("/welcome")
