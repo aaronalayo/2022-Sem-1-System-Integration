@@ -5,18 +5,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JWT Validation</title>
+    <title>Go ANYWHERE</title>
 </head>
 
 <body>
     <nav>
-        <!-- <a href="/">Home</a>
+        <a href="/">Home</a>
         <a href="/about-us">About us</a>
-        <a href="/contact-us">Contact us</a> -->
+        <a href="/contact-us">Contact us</a>
     </nav>
     <main>
         <div id="container">
-            <iframe src="https://mitid.eu.pythonanywhere.com/" frameborder="0" style="height: 30rem;">
+            <iframe src="https://mitid.eu.pythonanywhere.com/" frameborder="0" style="height: 25rem;">
             </iframe> 
         </div>
         
@@ -31,11 +31,12 @@
                     method: 'post',
                     body:
                        JSON.stringify(event.data)
+
                 }
 
                 ).then(res =>
-                    window.location.href = res.url
-                    // document.getElementById("container").innerHTML = "NICE"
+                    // window.location.href = res.url
+                    document.getElementById("container").innerHTML = "NICE"
                     );
 
             } catch (err) {
