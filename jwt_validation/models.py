@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import redis
 import json
 import uuid
+import time
 
 r = redis.StrictRedis()
 
@@ -17,8 +18,10 @@ class User(BaseModel):
 # r.hset('user:67890', mapping={"id":"2", "email":"@b", "token":"67890"})
 
 def save(user_id, user):
+    ttl = 120
+   
     r.hset(f'user:{user_id}', mapping={"mobile":f"{user['mobile']}", "code":f"{user['code']}", "cpr": f"{user['cpr']}"})
-    
+    r.expire(f'user:{user_id}', time=ttl )
     print(f"Saved user: {user_id}")
     
 
