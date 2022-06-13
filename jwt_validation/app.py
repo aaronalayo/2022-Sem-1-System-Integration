@@ -26,8 +26,8 @@ def _():
         data = jwt.decode(jwtdata, key=secret, algorithms=['HS256', ])
         print(data)
         code = generate_code()
-        res = send_sms(code)
-        res = send_email(code)
+        send_sms(code)
+        send_email(code)
         
         user = User(mobile= str(phone), code= str(code), cpr=data['cpr'])
         
@@ -35,8 +35,10 @@ def _():
         user_id = str(uuid.uuid4())
         save(user_id, dict(user))   
         response.set_cookie(name='userId', value=user_id)
+        response.status == 200
         return redirect("code")          
     except jwt.InvalidSignatureError:
+        response.status == 400
         return redirect('/')
 
 @get("/code")
@@ -66,14 +68,17 @@ def _():
 @view("welcome_esb")
 def _():
     user_id = request.get_cookie("userId")
-    print(user_id)
-    token = generate_token()
-    response.delete_cookie("userId")
-    saved_token = save_token(user_id,token)
-    if saved_token:
-        return dict(token=token)
+    if not user_id:
+        return redirect("/")
     else:
-        return dict(token="Token not valid, Try again")
+        print(user_id)
+        token = generate_token()
+        response.delete_cookie("userId")
+        saved_token = save_token(user_id,token)
+        if saved_token:
+            return dict(token=token)
+        else:
+            return dict(token="Token not valid, Try again")
 
 
 try:
